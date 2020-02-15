@@ -1,5 +1,8 @@
 package com.ajava8.space;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Employee {
 	private String name;
 	private double sal;
@@ -93,4 +96,22 @@ public class Employee {
 			return false;
 		return true;
 	}
+	
+	public static List<Employee> getEmployess() {
+		Employee emp1 = new Employee("Sudeep", 50000, 28, 101, 'M', "IT");
+		Employee emp2 = new Employee("Gaurav", 25000, 26, 102, 'M', "IT");
+		Employee emp3 = new Employee("Kundan", 35000, 20, 105, 'F', "HR");
+		Employee emp4 = new Employee("Densi", 600000, 35, 109, 'F', "HR");
+		Employee emp5 = new Employee("Deb", 900000, 25, 100, 'F', "Finance");
+
+		List<Employee> employess = new ArrayList<>();
+		employess.add(emp1);
+		employess.add(emp2);
+		employess.add(emp3);
+		employess.add(emp4);
+		employess.add(emp5);
+		
+		return employess;
+	}
+
 }
