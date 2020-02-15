@@ -15,6 +15,5 @@ public class EightDateTimeLogics {
 	   String desiredString = sj.toString();
 	   System.out.println("Desired O/P: "+desiredString);
 	   
-	}
-	
+	}	
 }

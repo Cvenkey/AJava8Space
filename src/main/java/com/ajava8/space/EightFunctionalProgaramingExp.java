@@ -1,6 +1,5 @@
 package com.ajava8.space;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -16,7 +15,7 @@ public class EightFunctionalProgaramingExp {
 	public static void main(String[] args) {
 		
 		System.out.println("Playing with Objects");
-		List<Employee> employees = getEmployess();
+		List<Employee> employees = Employee.getEmployess();
 
 		// find emp's whoe's salary lesser than 40000
 		List<Employee> emps = employees.stream().filter(emp -> emp.getSal() < 40000).collect(Collectors.toList());
@@ -54,9 +53,6 @@ public class EightFunctionalProgaramingExp {
 				.collect(Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet));
 		// employeeSet.remove(employeeSet.stream().findFirst()); //You can't
 		
-		// modify the this set
-		System.out.println("Afterremvoing size" + employeeSet.size());
-
 		System.out.println("Total no.of Employees with dups: " + employees.size());
 		employees = employees.stream().distinct().collect(Collectors.toList());
 		System.out.println("Total no.of Employees after remove dups" + employees.size());
@@ -72,7 +68,7 @@ public class EightFunctionalProgaramingExp {
 		// Group by gender
 		Map<Character, List<Employee>> empsByGender = employees.stream()
 				.collect(Collectors.groupingBy(Employee::getGender));
-		System.out.println(empsByGender); // removed duplicate and got only
+		System.out.println(empsByGender); // removed duplicate
 
 		// On fly map creation from set and iterating
 		employeeSet.stream().collect(Collectors.toMap(Employee::getId, Employee::getName)).entrySet()
@@ -89,7 +85,7 @@ public class EightFunctionalProgaramingExp {
 
 		// Modify Employee sal based on Name
 		CopyOnWriteArrayList<Employee> copyEmps = new CopyOnWriteArrayList<>();
-		copyEmps.addAll(getEmployess());
+		copyEmps.addAll(Employee.getEmployess());
 		copyEmps.stream().distinct().forEach(emp -> {
 			if (emp.getName().equals("Sudeep")) {
 				emp.setSal(16000);
@@ -99,7 +95,7 @@ public class EightFunctionalProgaramingExp {
 		System.out.println("After modified" + copyEmps);
 
 		// Peek method
-		List<Employee> eMps = getEmployess();
+		List<Employee> eMps = Employee.getEmployess();
 		eMps = eMps.stream().peek(emp -> emp.setSal(200000)).collect(Collectors.toList());
 		eMps.forEach(emp -> System.out.println(emp.getName() + " " + emp.getSal()));
 
@@ -107,9 +103,11 @@ public class EightFunctionalProgaramingExp {
 		Map<Integer, String> empMap = eMps.stream().distinct()
 				.collect(Collectors.toMap(Employee::getId, Employee::getName));
 		System.out.println("Map is :" + empMap);
-
+	
+        // Using predicate
 		Employee emp5 = new Employee("Deb", 900000, 65, 100, 'F', "Finance");
 		System.out.println("Is Senior Citizen " + eMps.stream().anyMatch(isSeniorCitizon(emp5)));
+		eMps.stream().forEach(e->System.out.println("Is Senior Citizen...."+hasEmployeeMoreThan50.test(e)));
 
 		// Find prime numbers
 		IntStream.range(2, 25).forEach(number -> System.out.print(number + " is Prime: " + isPrime(number) + " "));
@@ -136,7 +134,8 @@ public class EightFunctionalProgaramingExp {
 		System.out.println("Parallel Stream time taken: " + (endTime - startTime));
 
 		Predicate<Employee> salaryPredicate = e -> e.getSal() >= 50000;
-		List<Employee> es = getEmployess();
+		List<Employee> es = Employee.getEmployess();
+	
 		System.out.println("Predicate Result:" + es.stream().anyMatch(salaryPredicate));
 
 		// Convert List of emps to Array of Emps
@@ -150,7 +149,7 @@ public class EightFunctionalProgaramingExp {
 
 		// Throw exception while you not found given emp.
 		Employee empToFind = new Employee("Deb Shill", 900000, 65, 100, 'F', "Finance");
-		employees = getEmployess();
+		employees = Employee.getEmployess();
 		Employee emp = employees.stream().filter(e -> e.equals(empToFind)).findAny()
 				.orElseThrow(NoSuchElementException::new);
 		System.out.println("Employee found :" + emp);
@@ -162,31 +161,24 @@ public class EightFunctionalProgaramingExp {
 		// Print emp details 'ifPresent'
 		employees.stream().limit(1).findFirst()
 				.ifPresent(employee -> System.out.println("With 'ifPresent', details are :" + employee));
-
-	}
-
-	private static List<Employee> getEmployess() {
-		Employee emp1 = new Employee("Sudeep", 50000, 28, 101, 'M', "IT");
-		Employee emp2 = new Employee("Gaurav", 25000, 26, 102, 'M', "IT");
-		Employee emp3 = new Employee("Kundan", 35000, 20, 105, 'F', "HR");
-		Employee emp4 = new Employee("Densi", 600000, 35, 109, 'F', "HR");
-		Employee emp5 = new Employee("Deb", 900000, 65, 100, 'F', "Finance");
-		Employee emp6 = new Employee("Sudeep", 50000, 28, 101, 'M', "IT");
-
-		List<Employee> employess = new ArrayList<>();
-		employess.add(emp1);
-		employess.add(emp2);
-		employess.add(emp3);
-
-		employess.add(emp4);
-		employess.add(emp5);
-		employess.add(emp6);
-		return employess;
+	
+	   // Modifying stream object and returning new employee with modified content
+       Employee newEmp=  employees.stream().filter(e->e.getDept().equals("Finance"))
+        .map(f->new Employee(f.getName().toUpperCase() , f.getSal() , f.getAge(), f.getId(),
+        		f.getGender(), f.getDept())).collect(Collectors.toList()).get(0);
+       System.out.println("Mopdified emp is : "+newEmp);
 	}
 
 	public static Predicate<Employee> isSeniorCitizon(Employee e) {
 		return emp -> emp.getAge() > 50 ? true : false;
 	}
+
+	public static Predicate<Employee> hasEmployeeMoreThan50 = new Predicate<Employee>() {
+		@Override
+		public boolean test(Employee t) {
+			return t.getAge() > 50;
+		}
+	}; 
 
 	private static boolean isPrime(int number) {
 		return IntStream.rangeClosed(2, (int) Math.sqrt(number)).noneMatch(devider -> (number % devider) == 0) == true;
