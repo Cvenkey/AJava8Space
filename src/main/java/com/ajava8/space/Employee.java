@@ -103,15 +103,15 @@ public class Employee {
 		Employee emp3 = new Employee("Kundan", 35000, 20, 105, 'F', "HR");
 		Employee emp4 = new Employee("Densi", 600000, 35, 109, 'F', "HR");
 		Employee emp5 = new Employee("Deb", 900000, 25, 100, 'F', "Finance");
+		Employee emp6 = new Employee("Doung", 900000, 25, 100, 'T', "IT");
 
-		List<Employee> employess = new ArrayList<>();
-		employess.add(emp1);
-		employess.add(emp2);
-		employess.add(emp3);
-		employess.add(emp4);
-		employess.add(emp5);
-		
-		return employess;
+		List<Employee> employees = new ArrayList<>();
+		employees.add(emp1);
+		employees.add(emp2);
+		employees.add(emp3);
+		employees.add(emp4);
+		employees.add(emp5);
+		return employees;
 	}
 
 }

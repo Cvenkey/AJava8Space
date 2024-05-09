@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * This class denotes Java8 mappings features
  * Having techniques Creating Map, handling dups, handling NPE, add,remove,update map records 
  * Note : Java 8 Map api have overloaded methods toMap, toConcurrent, computeXXX, putXXX, removeXXX, and replaceXXX methods. 
- * Above declarative methods consice tradational coding styles.
+ * Above declarative methods concise traditional coding styles.
  *  
  */
 public class EightMappingFeatures {
@@ -76,6 +76,7 @@ public class EightMappingFeatures {
         
         // Use computeIfPresent to avoid NPE, when key not exist
         concurrentMap.computeIfPresent(107, (key,value)->EightMappingFeatures.updateEmpSalary(value));
+
         
         // Add employee when employee not found for given key
         Employee newEmp = new Employee("Kevin", 45000, 30, 107, 'M', "Dev");

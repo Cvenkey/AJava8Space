@@ -34,7 +34,7 @@ public class EightFunctionalProgaramingExp {
 		employees.stream().sorted(Comparator.comparingDouble(Employee::getSal).reversed()).limit(3)
 				.forEach(emp -> System.out.print("\n" + emp.getName() + " and" + emp.getSal()));
 
-		// Even we can store to collection object also
+		// Even we can sort to collection object also
 		Set<Employee> empSet = employees.stream().sorted(Comparator.comparingInt(Employee::getId))
 				.collect(Collectors.toSet());
 		System.out.print("\n" + empSet);
@@ -51,8 +51,8 @@ public class EightFunctionalProgaramingExp {
 		// Convert employees into unmodifiableset
 		Set<Employee> employeeSet = employees.stream()
 				.collect(Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet));
+
 		// employeeSet.remove(employeeSet.stream().findFirst()); //You can't
-		
 		System.out.println("Total no.of Employees with dups: " + employees.size());
 		employees = employees.stream().distinct().collect(Collectors.toList());
 		System.out.println("Total no.of Employees after remove dups" + employees.size());
@@ -106,8 +106,9 @@ public class EightFunctionalProgaramingExp {
 	
         // Using predicate
 		Employee emp5 = new Employee("Deb", 900000, 65, 100, 'F', "Finance");
-		System.out.println("Is Senior Citizen " + eMps.stream().anyMatch(isSeniorCitizon(emp5)));
+		System.out.println("Is Senior Citizen " + eMps.stream().anyMatch(isSeniorCitizen(emp5)));
 		eMps.stream().forEach(e->System.out.println("Is Senior Citizen...."+hasEmployeeMoreThan50.test(e)));
+
 
 		// Find prime numbers
 		IntStream.range(2, 25).forEach(number -> System.out.print(number + " is Prime: " + isPrime(number) + " "));
@@ -166,10 +167,16 @@ public class EightFunctionalProgaramingExp {
        Employee newEmp=  employees.stream().filter(e->e.getDept().equals("Finance"))
         .map(f->new Employee(f.getName().toUpperCase() , f.getSal() , f.getAge(), f.getId(),
         		f.getGender(), f.getDept())).collect(Collectors.toList()).get(0);
-       System.out.println("Mopdified emp is : "+newEmp);
+       System.out.println("Modified emp is : "+newEmp);
+
+	   // Gender types
+		employees.stream().map(Employee::getGender)
+				.distinct().collect(Collectors.toList())
+				.forEach(System.out::println);
+
 	}
 
-	public static Predicate<Employee> isSeniorCitizon(Employee e) {
+	public static Predicate<Employee> isSeniorCitizen(Employee e) {
 		return emp -> emp.getAge() > 50 ? true : false;
 	}
 
