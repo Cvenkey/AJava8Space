@@ -1,9 +1,14 @@
 package com.ajava8.space;
 
+import com.ajava8.space.cutomAnnotation.paramLevel.ToUpperCase;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 public class Employee {
+
+	@ToUpperCase
 	private String name;
 	private double sal;
 	private int age;
@@ -19,6 +24,10 @@ public class Employee {
 		this.id = id;
 		this.gender = gender;
 		this.dept = dept;
+	}
+
+	public Employee() {
+
 	}
 
 	public String getName() {
@@ -102,8 +111,8 @@ public class Employee {
 		Employee emp2 = new Employee("Gaurav", 25000, 26, 102, 'M', "IT");
 		Employee emp3 = new Employee("Kundan", 35000, 20, 105, 'F', "HR");
 		Employee emp4 = new Employee("Densi", 600000, 35, 109, 'F', "HR");
-		Employee emp5 = new Employee("Deb", 900000, 25, 100, 'F', "Finance");
-		Employee emp6 = new Employee("Doung", 900000, 25, 100, 'T', "IT");
+		Employee emp5 = new Employee("Deb", 900000, 25, 103, 'F', "Finance");
+		Employee emp6 = new Employee("Doung", 900000, 25, 104, 'T', "IT");
 
 		List<Employee> employees = new ArrayList<>();
 		employees.add(emp1);
@@ -114,4 +123,24 @@ public class Employee {
 		return employees;
 	}
 
+	public static String toCVS(Employee employee){
+		StringJoiner empDataString = new StringJoiner(",");
+		empDataString.add(employee.getName());
+		empDataString.add(String.valueOf(employee.getSal()));
+		empDataString.add(String.valueOf(employee.getAge()));
+		empDataString.add(String.valueOf(employee.getId()));
+		empDataString.add(String.valueOf(employee.getGender()));
+		empDataString.add(String.valueOf(employee.getDept()));
+		return empDataString.toString();
+	}
+
+	public static Employee fromCsv(String csvLine) {
+		String[] fields = csvLine.split(",");
+		return new Employee(fields[0],
+				Double.parseDouble(fields[1]),
+				Integer.parseInt(fields[2]),
+				Integer.parseInt(fields[3]),
+				fields[4].charAt(0),
+				fields[5]);
+	}
 }

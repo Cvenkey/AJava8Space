@@ -2,7 +2,9 @@ package com.ajava8.space.threads;
 
 import java.io.Serializable;
 import java.rmi.Remote;
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -17,8 +19,24 @@ public class CallableExample {
                 executorService.submit(new CharacterCounter("Hello World")).get();
         executorService.shutdown();
         occurrences.entrySet().forEach(entry->System.out.println(entry.getKey()+" "+entry.getValue()));
-        new ZeroMover(new int[]{0, 3, 0, 2, 8, 0}).run();
+
+        ThreadPoolExecutor t = new ScheduledThreadPoolExecutor(10);
+        new ZeroMover(new int[]{0,1,2,0,3,4,0}).run();
+
+        ScheduledExecutorService executorService1 = Executors.newSingleThreadScheduledExecutor();
+        long mills = new Date().getTime()/1000;
+        executorService1.schedule(Test::someTask,10,TimeUnit.SECONDS);
+        System.out.println("This is last line but appear before sometask method:"+ LocalDateTime.now());
+
     }
+}
+
+class Test {
+    static void someTask(){
+        System.out.println("this is someTask: executed after 60 sec."+LocalDateTime.now());
+    }
+
+
 }
 
 class CharacterCounter implements Callable {
@@ -42,14 +60,15 @@ class ZeroMover implements Runnable{
     }
     @Override
     public void run() {
-        Long noOfZeros = Arrays.stream(integers).filter(i->i==0).count();
-        List<Integer> integers = Arrays.stream(this.integers).filter(i->i!=0).boxed().collect(Collectors.toList());
-        for(int i = 0; i<noOfZeros; i++){
-            integers.add(0);
+        int j=0;
+        for(int i=0;i<integers.length;i++){
+            if(integers[i]==0)
+                continue;
+            integers[j] = integers[i];
+            j++;
         }
-        int[] modifiedArray = new int[this.integers.length];
-        for(int i =0;i<=integers.size()-1;i++)
-            modifiedArray[i] =integers.get(i);
-       System.out.println(Arrays.toString(modifiedArray));
+        for(;j<integers.length;j++)
+            integers[j] = 0;
+       System.out.println(Arrays.toString(integers));
     }
 }

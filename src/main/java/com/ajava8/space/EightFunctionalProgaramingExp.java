@@ -1,11 +1,6 @@
 package com.ajava8.space;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -29,6 +24,10 @@ public class EightFunctionalProgaramingExp {
 		// Sort employees based on Id
 		employees.stream().sorted(Comparator.comparingInt(Employee::getId)).forEach(System.out::print);
 		employees.stream().sorted(Comparator.comparingInt(Employee::getId)).forEach(emp -> System.out.println(emp));
+
+		//sort employees based on sal and display in descending order
+		employees.stream().sorted(Comparator.comparingDouble(Employee::getSal).reversed())
+				.collect(Collectors.toList()).forEach(e -> System.out.println(e.getName()+" "+e.getSal()));
 
 		// find first three Employee names whoe's getting high salary
 		employees.stream().sorted(Comparator.comparingDouble(Employee::getSal).reversed()).limit(3)
@@ -68,7 +67,18 @@ public class EightFunctionalProgaramingExp {
 		// Group by gender
 		Map<Character, List<Employee>> empsByGender = employees.stream()
 				.collect(Collectors.groupingBy(Employee::getGender));
+
 		System.out.println(empsByGender); // removed duplicate
+
+		// Group by department and then gender
+		Map<String,Map<Character,Long>>  genderCountByDepartment=employees.stream().collect(Collectors.groupingBy(Employee::getDept,
+				Collectors.groupingBy(Employee::getGender,Collectors.counting())));
+		genderCountByDepartment.entrySet().forEach(oe->{
+			System.out.println("Department Name: "+oe.getKey());
+			oe.getValue().entrySet().forEach(ie->{
+				System.out.println("   Gender: "+ie.getKey()+" Count: "+ie.getValue());
+			});
+		});
 
 		// On fly map creation from set and iterating
 		employeeSet.stream().collect(Collectors.toMap(Employee::getId, Employee::getName)).entrySet()
@@ -83,23 +93,8 @@ public class EightFunctionalProgaramingExp {
 				.collect(Collectors.partitioningBy(emp -> emp.getSal() >= 50000));
 		System.out.println(empsBySal);
 
-		// Modify Employee sal based on Name
-		CopyOnWriteArrayList<Employee> copyEmps = new CopyOnWriteArrayList<>();
-		copyEmps.addAll(Employee.getEmployess());
-		copyEmps.stream().distinct().forEach(emp -> {
-			if (emp.getName().equals("Sudeep")) {
-				emp.setSal(16000);
-			}
-		});
-
-		System.out.println("After modified" + copyEmps);
-
-		// Peek method
-		List<Employee> eMps = Employee.getEmployess();
-		eMps = eMps.stream().peek(emp -> emp.setSal(200000)).collect(Collectors.toList());
-		eMps.forEach(emp -> System.out.println(emp.getName() + " " + emp.getSal()));
-
 		// Converting List to Map
+		List<Employee> eMps = Employee.getEmployess();
 		Map<Integer, String> empMap = eMps.stream().distinct()
 				.collect(Collectors.toMap(Employee::getId, Employee::getName));
 		System.out.println("Map is :" + empMap);
@@ -109,6 +104,32 @@ public class EightFunctionalProgaramingExp {
 		System.out.println("Is Senior Citizen " + eMps.stream().anyMatch(isSeniorCitizen(emp5)));
 		eMps.stream().forEach(e->System.out.println("Is Senior Citizen...."+hasEmployeeMoreThan50.test(e)));
 
+		// Modify Employee sal based on Name
+		CopyOnWriteArrayList<Employee> copyEmps = new CopyOnWriteArrayList<>();
+		copyEmps.addAll(Employee.getEmployess());
+		copyEmps.stream().distinct().forEach(e -> {
+			if (e.getName().equals("Sudeep")) {
+				e.setSal(16000);
+			}
+		});
+		System.out.println("After modified" + copyEmps);
+
+		//Update all employees salaries
+		employees.stream().map(e->{
+			e.setSal(e.getSal()+1);
+			return e;
+		}).collect(Collectors.toList());
+        System.out.println("Salaries are updated: "+employees);
+
+		// Modifying stream object and returning new employee with modified content
+		Employee newEmp=  employees.stream().filter(e->e.getDept().equals("Finance"))
+				.map(f->new Employee(f.getName().toUpperCase() , f.getSal() , f.getAge(), f.getId(),
+						f.getGender(), f.getDept())).collect(Collectors.toList()).get(0);
+		System.out.println("Modified emp is : "+newEmp);
+
+		// Modify Using Peek method
+		eMps = eMps.stream().peek(emp -> emp.setSal(200000)).collect(Collectors.toList());
+		eMps.forEach(emp -> System.out.println(emp.getName() + " " + emp.getSal()));
 
 		// Find prime numbers
 		IntStream.range(2, 25).forEach(number -> System.out.print(number + " is Prime: " + isPrime(number) + " "));
@@ -120,7 +141,7 @@ public class EightFunctionalProgaramingExp {
 		startTime = System.currentTimeMillis();
 		IntStream.range(2, 50)
 				.filter(number -> (IntStream.rangeClosed(2, (int) Math.sqrt(number))
-						.noneMatch(devider -> (number % devider) == 0) == true))
+                        .noneMatch(divider -> (number % divider) == 0)))
 				.boxed().collect(Collectors.toList()).forEach(num -> System.out.print(+num + " "));
 		endTime = System.currentTimeMillis();
 		System.out.println("Stream time taken: " + (endTime - startTime));
@@ -155,25 +176,26 @@ public class EightFunctionalProgaramingExp {
 				.orElseThrow(NoSuchElementException::new);
 		System.out.println("Employee found :" + emp);
 
+		Optional<Employee> e = employees.stream().findAny();
+		e.ifPresent(name->System.out.println(e.get().getName()));
+
 		// Get boolean about existence of given emp
-		boolean flag = employees.stream().anyMatch(e -> e.equals(empToFind.getId() == e.getId()));
+		boolean flag = employees.stream().anyMatch(e1 -> e1.equals(empToFind.getId() == e1.getId()));
 		System.out.println("Result is :" + flag);
 
 		// Print emp details 'ifPresent'
 		employees.stream().limit(1).findFirst()
 				.ifPresent(employee -> System.out.println("With 'ifPresent', details are :" + employee));
-	
-	   // Modifying stream object and returning new employee with modified content
-       Employee newEmp=  employees.stream().filter(e->e.getDept().equals("Finance"))
-        .map(f->new Employee(f.getName().toUpperCase() , f.getSal() , f.getAge(), f.getId(),
-        		f.getGender(), f.getDept())).collect(Collectors.toList()).get(0);
-       System.out.println("Modified emp is : "+newEmp);
 
 	   // Gender types
 		employees.stream().map(Employee::getGender)
 				.distinct().collect(Collectors.toList())
 				.forEach(System.out::println);
 
+
+		//Fill list with add All
+		List<Integer> ints = new ArrayList<>();
+		ints.addAll(IntStream.range(0,10).boxed().collect(Collectors.toList()));
 	}
 
 	public static Predicate<Employee> isSeniorCitizen(Employee e) {

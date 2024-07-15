@@ -93,6 +93,7 @@ public class EightMappingFeatures {
         System.out.println("--------------------\nis Kevin rec exist ? "+employeeMap.containsKey(107));
         employeeMap.merge(107, newEmp, (preVal,newVal)->new Employee("Kevin", 45000, 30, 107, 'M', "Dev"));
         System.out.println("is Kevin rec exist now? "+employeeMap.containsKey(107));
+
         
 	}
 	private static Employee updateEmpSalary(Employee emp){
